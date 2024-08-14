@@ -1,94 +1,196 @@
 # Irys SDK
 
-![](./assets/irys-SDK.png?raw=true)
 
-
-The [Irys SDK](http://docs.irys.xyz/developer-docs/irys-sdk) is a typesafe SDK for interacting with [Irys](https://irys.xyz).
+The [Irys SDK](http://docs.irys.xyz/) is a typesafe SDK for interacting with [Irys](https://irys.xyz).
 
 ## What is Irys?
 
-Irys is the only provenance layer. It enables users to scale permanent data and precisely attribute its origin. Data uploaded to Irys is permanent, precise, and unconstrained. Learn [more in our docs](http://docs.irys.xyz/overview/about).
+Irys is the first L1 programmable datachain, designed to optimize data storage and execution. By combining storage and execution, it significantly increases the usefulness of blockspace, enabling a wider range of web services to come onchain that aren’t possible right now.
 
+Irys empowers developers to create and innovate like never before. With Irys, builders can eliminate dependencies, integrate efficient onchain data, and unlock new possibilities for dynamic, real-time applications—all within a unified platform.
 
-## How Irys works
+Use this SDK to upload onchain data. 
 
-![](./assets/provenance-machine.jpg?raw=true)
+## Irys SDK Quickstart
 
-When you upload data to Irys, you are immediately issued a receipt. This [receipt](https://docs.irys.xyz/learn/receipts) contains an ID that can be used to instantly download your data, along with attribution, authorship details, and timestamp accurate to the millisecond. The receipt acts as cryptographic proof of time and can be trustlessly verified as a safeguard against potentially malicious behavior.
+### Installing
 
-Next, Irys [includes your transaction in a bundle](http://docs.irys.xyz/learn/transaction-lifecycle) and submits it to Arweave where it is permanently stored. Irys guarantees your transaction will be finalized on Arweave (>= 50 block confirmations) and seeded to >=5 miners.
-
-For more details, including a video overview, [see our docs](http://docs.irys.xyz/overview/about).
-
-## Why Irys offers
-- Volumetric scaling: [Can handle 50K+ Transactions Per Second (TPS)](https://youtu.be/JKEivHKDXAo) and [limitless data volumes](http://docs.irys.xyz/learn/volumetric-scaling).
-- Instant uploads: Upload data to Irys in as little as 8ms.
-- Frictionless integration: [3-4 lines of code](http://docs.irys.xyz/developer-docs/irys-sdk) to integrate Irys.
-- Pay in any token: Sign and pay to use Irys in [14 supported tokens](http://docs.irys.xyz/overview/supported-tokens).
-
-## Getting started
-
-### Install the SDK
-
-Using npm:
+Install using npm:
 
 ```console
-npm install @irys/sdk
+npm install @irys-network/bundler-sdk
 ```
 
 or yarn:
+
 ```console
-yarn add @irys/sdk
+yarn add  @irys-network/bundler-sdk
 ```
 
-### Connect to an Irys node
 
-Connect to [one of our three nodes](http://docs.irys.xyz/overview/nodes):
+>If you get a warning saying `bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)` during install, it can be safely ignored. 
+
+### Importing
+
+```js
+import Irys from "@irys-network/bundler-sdk";
+```
+
+### Connecting to Irys
+
+Connect using a private key tied to an EVM or Solana wallet:
 
 ```js
 const getIrys = async () => {
-	const providerUrl = "https://rpc-mumbai.maticvigil.com";
-	const token = "matic";
- 
+	const network = "testnet";
+	// RPC URLs change often, use a recent one from https://chainlist.org/
+	const providerUrl = "";
+	const token = "ethereum";
+
 	const irys = new Irys({
-		network: "devnet", // "mainnet" || "devnet"
+		network,
 		token, // Token used for payment
-		key: process.env.PRIVATE_KEY, // Private key
+		key: process.env.PRIVATE_KEY, // ETH or SOL private key
 		config: { providerUrl }, // Optional provider URL, only required when using Devnet
 	});
 	return irys;
 };
 ```
 
-### Upload
+#### Provider URLs
+
+Use the `providerUrl` parameter to specify an RPC provider. This is required.
+
+### Funding Your Testnet Account
+
+Fund Irys using any of our supported tokens.
+
+
+| Token / Blockchain | Token | Parameter Value | `Irys` Support | `WebIrys` Support |
+| ------------------ | ----- | --------------- | -------------- | ----------------- |
+| Aptos              | APT   | aptos           | yes            | yes               |
+| Algorand           | ALGO  | algorand        | yes            | no                |
+| Arbitrum           | ETH   | arbitrum        | yes            | yes               |
+| Arweave            | AR    | arweave         | yes            | no                |
+| Avalanche C-Chain  | AVAX  | avalanche       | yes            | yes               |
+| Berachain          | BERA  | bera            | yes            | yes               |
+| Binance Coin       | BNB   | bnb             | yes            | yes               |
+| Boba               | BOBA  | boba            | yes            | yes               |
+| Boba-eth           | ETH   | boba-eth        | yes            | yes               |
+| Chainlink          | LINK  | chainlink       | yes            | yes               |
+| Ethereum           | ETH   | ethereum        | yes            | yes               |
+| Base Ethereum      | ETH   | base-eth        | yes            | yes               |
+| Linea Ethereum     | ETH   | linea-eth       | yes            | yes               |
+| Scroll Ethereum    | ETH   | scroll-eth      | yes            | yes               |
+| Fantom             | FTM   | fantom          | yes            | yes               |
+| IoTeX              | IoTeX | iotex           | yes            | yes               |
+| Near               | NEAR  | near            | yes            | yes               |
+| Polygon            | MATIC | matic           | yes            | yes               |
+| Solana             | SOL   | solana          | yes            | yes               |
+| USDC (on Ethereum) | USDC  | usdc-eth        | yes            | yes               |
+| USDC (on Polygon)  | USDC  | usdc-polygon    | yes            | yes               |
+
 
 ```js
-const uploadData = async () => {
+const fundIrys = async () => {
 	const irys = await getIrys();
-	const dataToUpload = "GM world.";
 	try {
-		const receipt = await irys.upload(dataToUpload);
-		console.log(`Data uploaded ==> https://gateway.irys.xyz/${receipt.id}`);
+		const fundTx = await irys.fund(irys.utils.toAtomic(0.05));
+		console.log(`Successfully funded ${irys.utils.fromAtomic(fundTx.quantity)} ${irys.token}`);
 	} catch (e) {
 		console.log("Error uploading data ", e);
 	}
 };
 ```
 
-For more code examples, including code showing how to upload files and folders, see [our docs](http://docs.irys.xyz/developer-docs/irys-sdk).
+### Uploading
 
-## Irys in the browser
+#### Uploading data
 
-When using [Irys in the browser](http://docs.irys.xyz/developer-docs/irys-sdk/irys-in-the-browser), the end user's injected provider is used to sign transactions and pay for uploads. See our docs for [code examples](http://docs.irys.xyz/developer-docs/irys-sdk/irys-in-the-browser). 
+```js
+const uploadData = async () => {
+	const irys = await getIrys();
+	const dataToUpload = "hirys world.";
+	try {
+		const receipt = await irys.upload(dataToUpload);
+		console.log(`Data uploaded ==> https://testnet-gateway.irys.xyz/${receipt.id}`);
+	} catch (e) {
+		console.log("Error uploading data ", e);
+	}
+};
+```
 
-## UI toolkit
+#### Uploading a file
 
-To help kickstart your next project, we've released the [Provenance Toolkit](http://docs.irys.xyz/developer-docs/provenance-toolkit), a full suite of open source UI components.
+```js
+const uploadFile = async () => {
+	const irys = await getIrys();
+	// Your file
+	const fileToUpload = "./myImage.png";
 
-## Video
+	const tags = [{ name: "application-id", value: "MyNFTDrop" }];
 
-We also have a [video](https://youtu.be/CdWn9clSybM) teaching how to build with Irys.
+	try {
+		const receipt = await irys.uploadFile(fileToUpload, { tags: tags });
+		console.log(`File uploaded ==> https://testnet-gateway.irys.xyz/${receipt.id}`);
+	} catch (e) {
+		console.log("Error uploading file ", e);
+	}
+};
+```
+
+#### Uploading a folder
+
+You can upload a group of files as a single transaction from both the server and the browser.
+
+> When [uploading a folder](/irys-sdk/api/uploadFolder), files can be accessed either directly at
+`https://testnet-gateway.irys.xyz/[transaction-id]` or `https://testnet-gateway.irys.xyz/[manifest-id]/[file-name]`
+
+
+```js
+const uploadFolder = async () => {
+	const irys = await getIrys();
+
+	// Upload an entire folder
+	const folderToUpload = "./my-images/"; // Path to folder
+	try {
+		const receipt = await irys.uploadFolder("./" + folderToUpload, {
+			indexFile: "", // Optional index file (file the user will load when accessing the manifest)
+			batchSize: 50, // Number of items to upload at once
+			keepDeleted: false, // whether to keep now deleted items from previous uploads
+		}); // Returns the manifest ID
+
+		console.log(`Files uploaded. Manifest ID ${receipt.id}`);
+	} catch (e) {
+		console.log("Error uploading file ", e);
+	}
+};
+```
+
+### Downloading Data
+
+Once data is uploaded, it becomes instantly accessible via our gateway. To download data, make a GET request as follows:
+
+`https://testnet-gateway.irys.xyz/[transaction-id]`
+
+Example:
+
+`https://testnet-gateway.irys.xyz/CO9EpX0lekJEfXUOeXncUmMuG8eEp5WJHXl9U9yZUYA`
+
+### 3rd party build tools
+
+### Parcel
+
+If using [Parcel](https://parceljs.org/), you will need to [manually enable package exports](https://parceljs.org/features/dependency-resolution/#package-exports) by adding the following to the `package.json` file in your project root directory.
+
+```json
+{
+	"@parcel/resolver-default": {
+		"packageExports": true
+	}
+}
+```
 
 ## Support
 
-If you have any questions or just want to brainstorm about how to integrate Irys into your project, reach out to us in [Discord](https://discord.irys.xyz).
+If you have any questions or just want to brainstorm about how to integrate Irys into your project, reach out to us in [Discord](https://discord.gg/irys).

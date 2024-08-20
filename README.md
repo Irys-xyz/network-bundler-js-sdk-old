@@ -17,7 +17,7 @@ Irys empowers developers to create and innovate like never before. With Irys, bu
 Install using npm:
 
 ```console
-npm install @irys-network/bundler-sdk
+npm install @irys-network/bundler-client
 ```
 
 
@@ -26,7 +26,7 @@ npm install @irys-network/bundler-sdk
 ## Importing
 
 ```js
-import Irys from "@irys-network/bundler-sdk";
+import Irys from "@irys-network/bundler-client";
 ```
 
 ## Connecting to Irys

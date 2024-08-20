@@ -1,7 +1,6 @@
-# Irys SDK
+# Irys Bundler SDK
 
-
-The [Irys SDK](http://docs.irys.xyz/) is a typesafe SDK for interacting with [Irys](https://irys.xyz).
+The Irys Bundler SDK is a typesafe SDK for uploading data to the Irys network. 
 
 ## What is Irys?
 
@@ -9,7 +8,7 @@ Irys is the first L1 programmable datachain, designed to optimize data storage a
 
 Irys empowers developers to create and innovate like never before. With Irys, builders can eliminate dependencies, integrate efficient onchain data, and unlock new possibilities for dynamic, real-time applications—all within a unified platform.
 
-Use this SDK to upload onchain data. 
+> This SDK is for uploading data only. 
 
 ## Irys SDK Quickstart
 
@@ -51,33 +50,28 @@ const getIrys = async () => {
 		network,
 		token, // Token used for payment
 		key: process.env.PRIVATE_KEY, // ETH or SOL private key
-		config: { providerUrl }, // Optional provider URL, only required when using Devnet
+		config: { providerUrl }, // RPC Provider URL, required.
 	});
 	return irys;
 };
 ```
 
-#### Provider URLs
-
-Use the `providerUrl` parameter to specify an RPC provider. This is required.
-
 ### Funding Your Testnet Account
 
 Fund Irys using any of our supported tokens.
-
 
 | Token / Blockchain | Token | Parameter Value | `Irys` Support | `WebIrys` Support |
 | ------------------ | ----- | --------------- | -------------- | ----------------- |
 | Aptos              | APT   | aptos           | yes            | yes               |
 | Algorand           | ALGO  | algorand        | yes            | no                |
 | Arbitrum           | ETH   | arbitrum        | yes            | yes               |
-| Arweave            | AR    | arweave         | yes            | no                |
 | Avalanche C-Chain  | AVAX  | avalanche       | yes            | yes               |
 | Berachain          | BERA  | bera            | yes            | yes               |
 | Binance Coin       | BNB   | bnb             | yes            | yes               |
 | Boba               | BOBA  | boba            | yes            | yes               |
 | Boba-eth           | ETH   | boba-eth        | yes            | yes               |
 | Chainlink          | LINK  | chainlink       | yes            | yes               |
+| Eclipse            | ETH   | eclipse         | yes            | yes               |
 | Ethereum           | ETH   | ethereum        | yes            | yes               |
 | Base Ethereum      | ETH   | base-eth        | yes            | yes               |
 | Linea Ethereum     | ETH   | linea-eth       | yes            | yes               |
@@ -143,8 +137,8 @@ const uploadFile = async () => {
 
 You can upload a group of files as a single transaction from both the server and the browser.
 
-> When [uploading a folder](/irys-sdk/api/uploadFolder), files can be accessed either directly at
-`https://testnet-gateway.irys.xyz/[transaction-id]` or `https://testnet-gateway.irys.xyz/[manifest-id]/[file-name]`
+> When uploading a folder files can be accessed either directly at
+`https://testnet-gateway.irys.xyz/:transactionId` or `https://testnet-gateway.irys.xyz/:manifestId/:fileName`
 
 
 ```js
@@ -171,7 +165,7 @@ const uploadFolder = async () => {
 
 Once data is uploaded, it becomes instantly accessible via our gateway. To download data, make a GET request as follows:
 
-`https://testnet-gateway.irys.xyz/[transaction-id]`
+`https://testnet-gateway.irys.xyz/:transactionId`
 
 Example:
 
